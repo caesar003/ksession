@@ -2,7 +2,7 @@
 
 # Define target installation directories
 BIN_DIR="$HOME/.bin"
-COMPLETION_DIR="$HOME/.bash_completion"
+COMPLETION_DIR="$HOME/.bash_completion.d"
 CONFIG_DIR="$HOME/.config/ksession"
 MAN_DIR="$HOME/.local/share/man/man1"
 
