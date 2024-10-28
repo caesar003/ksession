@@ -1,0 +1,4 @@
+todo ~/projects/todo
+alarm-clock ~/projects/alarm-clock
+config ~/.config
+music ~/.music
