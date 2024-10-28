@@ -1,134 +1,104 @@
 # KSession
 
-KSession is a utility script for managing sessions in the [Kitty terminal](https://sw.kovidgoyal.net/kitty/). It allows you to save, restore, view, and destroy session states, preserving tabs and their working directories for future use.
+KSession is a command-line tool designed to save and restore Kitty terminal sessions. It allows users to manage their terminal sessions easily by saving the state of open tabs and their working directories for future restoration.
+
+## Table of Contents
+- [Installation](#installation)
+- [Usage](#usage)
+- [Uninstallation](#uninstallation)
+- [Configuration Files](#configuration-files)
+- [Manual](#manual)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Installation
 
-To install KSession, clone this repository and run the `install.sh` script:
+1. Clone the repository:
 
+   ```bash
+   git clone https://github.com/caesar003/ksession.git
+   cd ksession
+   ```
 
-```bash
-git clone https://github.com/caesar003/ksession.git
-cd ksession
-./install.sh
-```
+2. Make the installation script executable:
 
-### Install Locations
+   ```bash
+   chmod +x install.sh
+   ```
 
--   **Binary**: `~/.bin/ksession`
--   **Completion script**: `~/.bash_completion/ksession`
--   **Configuration files**: `~/.config/ksession/sessions`
--   **Manual page**: `~/.local/share/man/man1/ksession.1`
+3. Run the installation script:
 
-**Note**: Ensure `~/.bin` is in your PATH by adding the following line to your `~/.bashrc`:
+   ```bash
+   ./install.sh
+   ```
 
-```bash
-export PATH="$HOME/.bin:$PATH"
-```
+   This will install `ksession` in `~/.bin`, set up the completion script, and place the manual page in `~/.local/share/man/man1`. Make sure to add `~/.bin` to your PATH by adding the following line to your `~/.bashrc`:
 
-After editing, reload your shell or run:
-
-```bash
-source ~/.bashrc
-```
+   ```bash
+   export PATH="$HOME/.bin:$PATH"
+   ```
 
 ## Usage
 
-```bash
-ksession {save|-s|restore|-r|destroy|-d|list|-l|view|-v}
-```
+After installation, you can use the following commands:
 
-### Commands
+- **Save a session:**
+  ```bash
+  ksession save <session_name>
+  ```
 
--   `save [session_name]` | `-s [session_name]`
-    Saves the current Kitty session with the specified name.
+- **Restore a session:**
+  ```bash
+  ksession restore <session_name>
+  ```
 
-    **Example**: `ksession save my_session`
+- **Destroy all but one tab:**
+  ```bash
+  ksession destroy
+  ```
 
--   `restore [session_name]` | `-r [session_name]`
-    Restores a saved session by its name.
+- **List all saved sessions:**
+  ```bash
+  ksession list
+  ```
 
-    **Example**: `ksession restore my_session`
+- **View a session's contents:**
+  ```bash
+  ksession view <session_name>
+  ```
 
--   `destroy` | `-d`
-    Closes all but one of the open Kitty tabs.
+- **Uninstall KSession:**
+  ```bash
+  ksession -u
+  ```
 
--   `list` | `-l`
-    Lists all saved sessions.
+## Uninstallation
 
--   `view [session_name]` | `-v [session_name]`
-    Displays the contents of a saved session.
-
-### Examples
-
--   **Save a session**:
-    ```bash
-    ksession save my_session
-    ```
--   **Restore a session**:
-
-    ```bash
-    ksession restore my_session
-    ```
-
--   **Destroy all but one tab**:
-
-    ```bash
-    ksession destroy
-    ```
-
--   **List all saved sessions**:
-
-    ```bash
-    ksession list
-    ```
-
--   **View a session's contents**:
-    ```bash
-    ksession view my_session
-    ```
-
-## Shell Completion
-
-Command completion for `ksession` is installed by default to `~/.bash_completion/ksession`. This provides auto-completion for commands and session names. To enable it immediately after installation, source the file manually:
+To uninstall KSession, run the following command:
 
 ```bash
-source ~/.bash_completion/ksession
+ksession -u
 ```
 
-Or restart your terminal.
+You will be prompted to confirm the uninstallation and choose whether to delete the session files in `~/.config/ksession`. This ensures that the process is not done accidentally.
 
-## Manual Page
+## Configuration Files
 
-The manual page is installed to `~/.local/share/man/man1/ksession.1`. You can access it using:
+KSession uses a configuration directory located at `~/.config/ksession/sessions`, where session files are stored. You can manually edit or remove these files as needed.
+
+## Manual
+
+You can access the manual page for KSession by running:
 
 ```bash
 man ksession
 ```
 
-## Uninstallation
+## Contributing
 
-To uninstall KSession, run the `uninstall.sh` script:
-
-```bash
-./uninstall.sh
-```
+Contributions are welcome! If you would like to contribute to KSession, please fork the repository and create a pull request.
 
 ## License
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+This project is licensed under the MIT License. See the LICENSE file for details.
 
-## Author
-
-Created by [caesar003](https://github.com/caesar003).
-
-```
-This README includes:
-
-1. **Overview** of KSession.
-2. **Installation instructions**.
-3. **Usage guide** for each command.
-4. **Examples** for command usage.
-5. **Shell completion** and **manual page** information.
-6. **Uninstallation** and **license** information.
-```
