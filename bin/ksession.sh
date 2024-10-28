@@ -8,6 +8,15 @@ MAN_PAGE="$HOME/.local/share/man/man1/ksession.1"
 
 mkdir -p "$SESSION_DIR"
 
+prompt_user() {
+	local message="$1"
+	read -p "$message (y/n): " response
+	case "$response" in
+	[yY][eE][sS] | [yY]) return 0 ;;
+	*) return 1 ;;
+	esac
+}
+
 # Save state function
 save_state() {
 	local session_name="$1"
