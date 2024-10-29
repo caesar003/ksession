@@ -1,13 +1,17 @@
 #!/bin/bash
 
-SESSION_DIR=~/.config/ksession/sessions
-BIN_PATH="$HOME/.bin/ksession"
-COMPLETION_PATH="$HOME/.bash_completion/ksession"
+# Define constants for paths
+VERSION="1.0.1"
+SESSION_DIR="$HOME/.config/ksession/sessions"
+BIN_PATH="/usr/bin/ksession"
+COMPLETION_PATH="/usr/share/bash-completion/ksession"
 CONFIG_DIR="$HOME/.config/ksession"
-MAN_PAGE="$HOME/.local/share/man/man1/ksession.1"
+MAN_PAGE="/usr/share/man/man1/ksession.1"
 
+# Ensure the session directory exists
 mkdir -p "$SESSION_DIR"
 
+# Function to prompt user for confirmation
 prompt_user() {
 	local message="$1"
 	read -p "$message (y/n): " response
@@ -17,7 +21,7 @@ prompt_user() {
 	esac
 }
 
-# Save state function
+# Function to save the state of the terminal
 save_state() {
 	local session_name="$1"
 	if [ -z "$session_name" ]; then
@@ -30,7 +34,7 @@ save_state() {
 	echo "Kitty state saved to $state_file"
 }
 
-# Restore state function
+# Function to restore the state of the terminal
 restore_state() {
 	local session_name="$1"
 	if [ -z "$session_name" ]; then
@@ -60,29 +64,29 @@ restore_state() {
 	echo "Kitty state restored from $state_file"
 }
 
-# Destroy tabs function
+# Function to destroy all tabs except one
 destroy_tabs() {
 	tabs=$(kitty @ ls | jq '.[0].tabs[].id')
 
-	if [ $(echo "$tabs" | wc -l) -le 1 ]; then
+	if [ "$(echo "$tabs" | wc -l)" -le 1 ]; then
 		echo "There is only one tab open, nothing to destroy."
 		exit 0
 	fi
 
 	for tab in $(echo "$tabs" | tail -n +2); do
-		kitty @ close-tab --match id:$tab
+		kitty @ close-tab --match id:"$tab"
 	done
 
 	echo "All tabs except one have been destroyed."
 }
 
-# List sessions function
+# Function to list available sessions
 list_sessions() {
 	echo "Available sessions:"
-	ls -1 "$SESSION_DIR"/*.txt 2>/dev/null | sed 's|^.*/||' | sed 's/\.txt$//'
+	ls -1 "$SESSION_DIR"/*.txt 2>/dev/null | sed 's|^.*/||; s/\.txt$//'
 }
 
-# View session function
+# Function to view session content
 view_session() {
 	local session_name="$1"
 	if [ -z "$session_name" ]; then
@@ -105,7 +109,7 @@ view_session() {
 	done <"$state_file"
 }
 
-# Uninstall function
+# Function to uninstall KSession
 uninstall_ksession() {
 	echo "Preparing to uninstall KSession..."
 
@@ -120,8 +124,13 @@ uninstall_ksession() {
 		fi
 
 		# Remove binary, completion script, and man page
-		rm -f "$BIN_PATH" "$COMPLETION_PATH" "$MAN_PAGE"
-		mandb "$HOME/.local/share/man" 2>/dev/null || echo "Man database updated."
+		sudo rm -f "$BIN_PATH" "$COMPLETION_PATH" "$MAN_PAGE" || {
+			echo "Error: Failed to remove KSession files."
+			exit 1
+		}
+
+		# Update the man database
+		sudo mandb || echo "Man database updated."
 
 		echo "KSession uninstallation complete."
 	else
@@ -133,26 +142,30 @@ uninstall_ksession() {
 
 # Main argument handling
 case "$1" in
-save | -s)
-	save_state "$2"
-	;;
-restore | -r)
-	restore_state "$2"
-	;;
-destroy | -d)
-	destroy_tabs
-	;;
-list | -l)
-	list_sessions
-	;;
-view | -v)
-	view_session "$2"
-	;;
-uninstall | -u)
-	uninstall_ksession
-	;;
-*)
-	echo "Usage: ksession {save|-s|restore|-r|destroy|-d|list|-l|view|-v|uninstall|-u}"
-	exit 1
-	;;
+    save | -s)
+        save_state "$2"
+        ;;
+    restore | -r)
+        restore_state "$2"
+        ;;
+    destroy | -d)
+        destroy_tabs
+        ;;
+    list | -l)
+        list_sessions
+        ;;
+    view | -v)
+        view_session "$2"
+        ;;
+    uninstall | -u)
+        uninstall_ksession
+        ;;
+    version | --version)
+        echo "KSession version $VERSION"
+        exit 0
+        ;;
+    *)
+        echo "Usage: ksession {save|-s|restore|-r|destroy|-d|list|-l|view|-v|uninstall|-u|version|-v}"
+        exit 1
+        ;;
 esac

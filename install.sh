@@ -1,35 +1,30 @@
 #!/bin/bash
 
-# Define target installation directories
-BIN_DIR="$HOME/.bin"
-COMPLETION_DIR="$HOME/.bash_completion.d"
-CONFIG_DIR="$HOME/.config/ksession"
-MAN_DIR="$HOME/.local/share/man/man1"
+# Define paths for system-wide installation
+BIN_PATH="/usr/bin"
+MAN_PATH="/usr/share/man/man1"
+COMPLETION_PATH="/usr/share/bash-completion/completions"
+CONFIG_PATH="$HOME/.config/ksession" # Still keeping user-specific sessions here for flexibility
 
-# Create necessary directories if they don't exist
-mkdir -p "$BIN_DIR" "$COMPLETION_DIR" "$CONFIG_DIR/sessions" "$MAN_DIR"
+# Copy the main script to /usr/bin
+echo "Installing ksession script to $BIN_PATH..."
+sudo install -m 755 bin/ksession.sh "$BIN_PATH/ksession"
 
-# Copy binary to ~/.bin
-cp bin/ksession.sh "$BIN_DIR/ksession"
-chmod +x "$BIN_DIR/ksession" # Make sure it's executable
+# Copy the man page to /usr/share/man/man1
+echo "Installing man page to $MAN_PATH..."
+sudo install -m 644 man/ksession.1 "$MAN_PATH"
 
-# Copy completion script to ~/.bash_completion
-cp completion/ksession_completion.sh "$COMPLETION_DIR/ksession"
+# Copy the bash completion script
+echo "Installing bash completion script to $COMPLETION_PATH..."
+sudo install -m 644 completion/ksession_completion.sh "$COMPLETION_PATH/ksession"
 
-# Copy config files to ~/.config/ksession
-cp config/sessions/sample.txt "$CONFIG_DIR/sessions/"
+# Ensure the config directory exists for sessions
+echo "Creating config directory at $CONFIG_PATH for session files..."
+mkdir -p "$CONFIG_PATH/sessions"
+cp -r config/sessions/* "$CONFIG_PATH/sessions/"
 
-# Copy man page to ~/.local/share/man/man1 and update man database
-cp man/ksession.1 "$MAN_DIR/"
-mandb "$MAN_DIR" 2>/dev/null || echo "Man database updated."
+# Update the man database
+echo "Updating man database..."
+sudo mandb
 
-echo "Installation complete."
-echo "Make sure ~/.bin is in your PATH by adding the following line to your ~/.bashrc:"
-echo "export PATH=\"\$HOME/.bin:\$PATH\""
-
-# Reload shell completion if in an interactive session
-if [ -n "$BASH_VERSION" ]; then
-	source "$COMPLETION_DIR/ksession" 2>/dev/null || echo "Completion script sourced."
-else
-	echo "To enable auto-completion, restart your terminal or source the file manually."
-fi
+echo "Installation complete! You can now use 'ksession' from anywhere."

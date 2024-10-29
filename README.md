@@ -3,74 +3,91 @@
 KSession is a command-line tool designed to save and restore Kitty terminal sessions. It allows users to manage their terminal sessions easily by saving the state of open tabs and their working directories for future restoration.
 
 ## Table of Contents
-- [Installation](#installation)
-- [Usage](#usage)
-- [Uninstallation](#uninstallation)
-- [Configuration Files](#configuration-files)
-- [Manual](#manual)
-- [Contributing](#contributing)
-- [License](#license)
+
+-   [Installation](#installation)
+-   [Usage](#usage)
+-   [Uninstallation](#uninstallation)
+-   [Configuration Files](#configuration-files)
+-   [Manual](#manual)
+-   [Contributing](#contributing)
+-   [License](#license)
 
 ## Installation
 
-1. Clone the repository:
+1. **Using the installation script.**
 
-   ```bash
-   git clone https://github.com/caesar003/ksession.git
-   cd ksession
-   ```
+    - Clone the repository:
 
-2. Make the installation script executable:
+        ```bash
+        git clone https://github.com/caesar003/ksession.git
+        cd ksession
+        ```
 
-   ```bash
-   chmod +x install.sh
-   ```
+    - Make the installation script executable:
 
-3. Run the installation script:
+        ```bash
+        chmod +x install.sh
+        ```
 
-   ```bash
-   ./install.sh
-   ```
+    - Run the installation script:
 
-   This will install `ksession` in `~/.bin`, set up the completion script, and place the manual page in `~/.local/share/man/man1`. Make sure to add `~/.bin` to your PATH by adding the following line to your `~/.bashrc`:
+        ```bash
+        ./install.sh
+        ```
 
-   ```bash
-   export PATH="$HOME/.bin:$PATH"
-   ```
+        This will install `ksession` in `/usr/bin`, set up the completion script, and place the manual page in `/usr/share/man/man1`.
+
+2. Using the `.deb` package (cleaner Option)
+
+    - Alternatively, you download the `.deb` package from the [releases page](https://github.com/caesar003/ksession/releases) and install it normally:
+        ```sh
+        sudo dpkg -i ksession*.deb
+        ```
+
+3. Verify Installation:
+
+    ```sh
+    ksession --version
+    ```
 
 ## Usage
 
 After installation, you can use the following commands:
 
-- **Save a session:**
-  ```bash
-  ksession save <session_name>
-  ```
+-   **Save a session:**
 
-- **Restore a session:**
-  ```bash
-  ksession restore <session_name>
-  ```
+    ```bash
+    ksession save <session_name>
+    ```
 
-- **Destroy all but one tab:**
-  ```bash
-  ksession destroy
-  ```
+-   **Restore a session:**
 
-- **List all saved sessions:**
-  ```bash
-  ksession list
-  ```
+    ```bash
+    ksession restore <session_name>
+    ```
 
-- **View a session's contents:**
-  ```bash
-  ksession view <session_name>
-  ```
+-   **Destroy all but one tab:**
 
-- **Uninstall KSession:**
-  ```bash
-  ksession -u
-  ```
+    ```bash
+    ksession destroy
+    ```
+
+-   **List all saved sessions:**
+
+    ```bash
+    ksession list
+    ```
+
+-   **View a session's contents:**
+
+    ```bash
+    ksession view <session_name>
+    ```
+
+-   **Uninstall KSession:**
+    ```bash
+    ksession -u
+    ```
 
 ## Uninstallation
 
@@ -101,4 +118,3 @@ Contributions are welcome! If you would like to contribute to KSession, please f
 ## License
 
 This project is licensed under the MIT License. See the LICENSE file for details.
-
