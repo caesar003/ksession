@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define constants for paths
-VERSION="1.0.2"
+VERSION="1.0.3"
 SESSION_DIR="$HOME/.config/ksession/sessions"
 BIN_PATH="/usr/bin/ksession"
 COMPLETION_PATH="/usr/share/bash-completion/ksession"
