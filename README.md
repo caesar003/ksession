@@ -13,14 +13,11 @@ KSession is a command-line tool designed to save and restore Kitty terminal sess
 -   [Contributing](#contributing)
 -   [License](#license)
 
-
-
 ## Prerequisites
 
-- **Kitty Terminal**: KSession is specifically designed to communicate with the Kitty terminal API. You must have Kitty running for this tool to work effectively. Dowload it [here](https://sw.kovidgoyal.net/kitty/) if you don't have it yet. Trust me you wont regret it. 
+-   **Kitty Terminal**: KSession is specifically designed to communicate with the Kitty terminal API. You must have Kitty running for this tool to work effectively. Dowload it [here](https://sw.kovidgoyal.net/kitty/) if you don't have it yet. Trust me you wont regret it.
 
-- **Credits**: Special thanks to [Kovid Goyal](https://kovidgoyal.net) for creating the Kitty terminal and its awesome features that make `KSession` possible.
-
+-   **Credits**: Special thanks to [Kovid Goyal](https://kovidgoyal.net) for creating the Kitty terminal and its awesome features that make `KSession` possible.
 
 ## Installation
 

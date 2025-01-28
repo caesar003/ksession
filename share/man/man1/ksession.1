@@ -1,4 +1,4 @@
-.TH "KSESSION" "1" "October 2024" "1.0.4" "Custom Commands"
+.TH "KSESSION" "1" "October 2024" "1.1.0" "Custom Commands"
 .SH NAME
 ksession \- Save and restore Kitty terminal sessions
 .SH SYNOPSIS
@@ -11,8 +11,6 @@ ksession \- Save and restore Kitty terminal sessions
 \fBksession\fR {list|-l}
 .br
 \fBksession\fR {view|-v} [session_name]
-.br
-\fBksession\fR {uninstall|-u}
 .SH DESCRIPTION
 The \fBksession\fR command allows users to save, restore, and manage Kitty terminal sessions. 
 This script saves the state of open tabs and their working directories for future restoration.
@@ -32,17 +30,6 @@ List all saved session files.
 .TP
 \fBview, -v\fR [session_name]
 Display the contents of a saved session file in a readable format.
-.TP
-\fBuninstall, -u\fR
-Initiate uninstallation of \fBksession\fR. 
-.P
-This command will:
-.IP "1." 4
-Prompt the user for confirmation to proceed with uninstallation.
-.IP "2." 4
-Ask whether to delete all saved session files in \fB~/.config/ksession/\fR. If confirmed, all files in this directory are permanently deleted; if declined, session files are preserved.
-.IP
-Uninstallation removes the main binary, completion script, configuration files, and manual page, leaving no \fBksession\fR files on the system.
 .SH EXAMPLES
 .TP
 Save a session:
@@ -59,8 +46,5 @@ List all saved sessions:
 .TP
 View a session's contents:
 \fBksession view my_session\fR
-.TP
-Uninstall ksession:
-\fBksession uninstall\fR or \fBksession -u\fR
 .SH AUTHOR
 caesar - https://github.com/caesar003

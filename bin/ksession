@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define constants for paths
-VERSION="1.0.4"
+VERSION="1.1.0"
 SESSION_DIR="$HOME/.config/ksession/sessions"
 BIN_PATH="/usr/bin/ksession"
 COMPLETION_PATH="/usr/share/bash-completion/ksession"
@@ -109,63 +109,29 @@ view_session() {
 	done <"$state_file"
 }
 
-# Function to uninstall KSession
-uninstall_ksession() {
-	echo "Preparing to uninstall KSession..."
-
-	# Prompt to confirm uninstallation
-	if prompt_user "You are about to uninstall KSession. Are you sure?"; then
-		# Ask if user wants to delete session files
-		if prompt_user "Do you want to delete all saved session files in $SESSION_DIR?"; then
-			rm -rf "$CONFIG_DIR"
-			echo "Deleted $CONFIG_DIR"
-		else
-			echo "Preserved $CONFIG_DIR"
-		fi
-
-		# Remove binary, completion script, and man page
-		sudo rm -f "$BIN_PATH" "$COMPLETION_PATH" "$MAN_PAGE" || {
-			echo "Error: Failed to remove KSession files."
-			exit 1
-		}
-
-		# Update the man database
-		sudo mandb || echo "Man database updated."
-
-		echo "KSession uninstallation complete."
-	else
-		echo "Uninstallation aborted."
-	fi
-
-	exit 0
-}
-
 # Main argument handling
 case "$1" in
-    save | -s)
-        save_state "$2"
-        ;;
-    restore | -r)
-        restore_state "$2"
-        ;;
-    destroy | -d)
-        destroy_tabs
-        ;;
-    list | -l)
-        list_sessions
-        ;;
-    view | -v)
-        view_session "$2"
-        ;;
-    uninstall | -u)
-        uninstall_ksession
-        ;;
-    version | --version)
-        echo "KSession version $VERSION"
-        exit 0
-        ;;
-    *)
-        echo "Usage: ksession {save|-s|restore|-r|destroy|-d|list|-l|view|-v|uninstall|-u|version|-v}"
-        exit 1
-        ;;
+save | -s)
+	save_state "$2"
+	;;
+restore | -r)
+	restore_state "$2"
+	;;
+destroy | -d)
+	destroy_tabs
+	;;
+list | -l)
+	list_sessions
+	;;
+view | -v)
+	view_session "$2"
+	;;
+version | --version)
+	echo "KSession version $VERSION"
+	exit 0
+	;;
+*)
+	echo "Usage: ksession {save|-s|restore|-r|destroy|-d|list|-l|view|-v|version|-v}"
+	exit 1
+	;;
 esac
