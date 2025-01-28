@@ -3,10 +3,6 @@
 # Define constants for paths
 VERSION="1.1.0"
 SESSION_DIR="$HOME/.config/ksession/sessions"
-BIN_PATH="/usr/bin/ksession"
-COMPLETION_PATH="/usr/share/bash-completion/ksession"
-CONFIG_DIR="$HOME/.config/ksession"
-MAN_PAGE="/usr/share/man/man1/ksession.1"
 
 # Ensure the session directory exists
 mkdir -p "$SESSION_DIR"
