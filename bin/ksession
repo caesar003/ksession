@@ -26,7 +26,7 @@ save_state() {
 	fi
 	local state_file="$SESSION_DIR/${session_name}.txt"
 
-	kitty @ ls | jq '[.[0].tabs[] | {title: .title, cwd: .windows[0].cwd}]' >"$state_file"
+	kitty @ ls | jq -r '.[0].tabs[] | "\(.title) \(.windows[0].cwd)"' >"$state_file"
 	echo "Kitty state saved to $state_file"
 }
 
