@@ -1,30 +1,31 @@
 #!/bin/bash
 
-# Define constants for paths
-VERSION="1.1.2"
-SESSION_DIR="$HOME/.config/ksession/sessions"
+# KSession
+# Last modified: Wed Jan 29 2025, 19.00
 
-# Ensure the session directory exists
+# Define constants for paths
+VERSION="1.2.0"
+SESSION_DIR="$HOME/.config/ksession/sessions"
 mkdir -p "$SESSION_DIR"
 
-# Function to prompt user for confirmation
-prompt_user() {
-	local message="$1"
-	read -p "$message (y/n): " response
-	case "$response" in
-	[yY][eE][sS] | [yY]) return 0 ;;
-	*) return 1 ;;
-	esac
+# Helper function to ensure a session name is provided
+require_session_name() {
+	if [ -z "$1" ]; then
+		echo "Error: Session name must be provided."
+		exit 1
+	fi
+}
+
+# Helper function to get the session file path
+get_session_path() {
+	echo "$SESSION_DIR/$1.txt"
 }
 
 # Function to save the state of the terminal
 save_state() {
-	local session_name="$1"
-	if [ -z "$session_name" ]; then
-		echo "Error: Session name must be provided for saving."
-		exit 1
-	fi
-	local state_file="$SESSION_DIR/${session_name}.txt"
+	require_session_name "$1"
+	local state_file
+	state_file=$(get_session_path "$1")
 
 	kitty @ ls | jq -r '.[0].tabs[] | "\(.title) \(.windows[0].cwd)"' >"$state_file"
 	echo "Kitty state saved to $state_file"
@@ -32,30 +33,26 @@ save_state() {
 
 # Function to restore the state of the terminal
 restore_state() {
-	local session_name="$1"
-	if [ -z "$session_name" ]; then
-		echo "Error: Session name must be provided for restoring."
-		exit 1
-	fi
-	local state_file="$SESSION_DIR/${session_name}.txt"
+	require_session_name "$1"
+	local state_file
+	state_file=$(get_session_path "$1")
 
 	if [ ! -f "$state_file" ]; then
 		echo "No state file found at $state_file"
 		exit 1
 	fi
 
-	tab_number=0
+	local tab_number=0
 	while IFS=' ' read -r title cwd; do
-		numbered_title="$((tab_number + 1)). $title"
+		local numbered_title="$((tab_number + 1)). $title"
 
 		if [ $tab_number -eq 0 ]; then
 			kitty @ set-tab-title "$numbered_title" >/dev/null 2>&1
 			kitty @ send-text "cd \"$cwd\"\n" >/dev/null 2>&1
-			echo "1. opening $title at $cwd"
 		else
 			kitty @ launch --type=tab --tab-title="$numbered_title" --cwd="$cwd" >/dev/null 2>&1
-			echo "$((tab_number + 1)). opening $title at $cwd"
 		fi
+		echo "$((tab_number + 1)). opening $title at $cwd"
 		((tab_number++))
 	done <"$state_file"
 
@@ -64,6 +61,7 @@ restore_state() {
 
 # Function to destroy all tabs except one
 destroy_tabs() {
+	local tabs
 	tabs=$(kitty @ ls | jq '.[0].tabs[].id')
 
 	if [ "$(echo "$tabs" | wc -l)" -le 1 ]; then
@@ -86,20 +84,16 @@ list_sessions() {
 
 # Function to view session content
 view_session() {
-	local session_name="$1"
-	if [ -z "$session_name" ]; then
-		echo "Error: Session name must be provided for viewing."
-		exit 1
-	fi
-
-	local state_file="$SESSION_DIR/${session_name}.txt"
+	require_session_name "$1"
+	local state_file
+	state_file=$(get_session_path "$1")
 
 	if [ ! -f "$state_file" ]; then
-		echo "No session file found with the name $session_name."
+		echo "No session file found with the name $1."
 		exit 1
 	fi
 
-	echo "Session content for $session_name:"
+	echo "Session content for $1:"
 	while IFS= read -r line; do
 		title=$(echo "$line" | awk '{print $1}')
 		cwd=$(echo "$line" | awk '{print $2}')
@@ -129,7 +123,7 @@ version | --version)
 	exit 0
 	;;
 *)
-	echo "Usage: ksession {save|-s|restore|-r|destroy|-d|list|-l|view|-v|version|-v}"
+	echo "Usage: ksession {save|-s|restore|-r|destroy|-d|list|-l|view|-v|version|--version}"
 	exit 1
 	;;
 esac
