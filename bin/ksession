@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define constants for paths
-VERSION="1.1.1"
+VERSION="1.1.2"
 SESSION_DIR="$HOME/.config/ksession/sessions"
 
 # Ensure the session directory exists
@@ -26,7 +26,7 @@ save_state() {
 	fi
 	local state_file="$SESSION_DIR/${session_name}.txt"
 
-	kitty @ ls | jq '[.[0].tabs[] | {title: .title, cwd: .windows[0].cwd}]' >"$state_file"
+	kitty @ ls | jq -r '.[0].tabs[] | "\(.title) \(.windows[0].cwd)"' >"$state_file"
 	echo "Kitty state saved to $state_file"
 }
 
