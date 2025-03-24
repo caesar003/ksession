@@ -4,7 +4,7 @@
 # Last modified: Mon Mar 24 2025, 18.52
 
 # Define constants for paths
-VERSION="1.2.0"
+VERSION="1.3.0"
 SESSION_DIR="$HOME/.config/ksession/sessions"
 mkdir -p "$SESSION_DIR"
 
