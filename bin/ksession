@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # KSession
-# Last modified: Mon Mar 24 2025, 18.52
+# Last modified: Wed May 14 2025, 13.37
 
 # Define constants for paths
-VERSION="1.3.0"
+VERSION="1.3.1"
 SESSION_DIR="$HOME/.config/ksession/sessions"
 mkdir -p "$SESSION_DIR"
 
@@ -44,12 +44,15 @@ restore_state() {
 
 	local tab_number=0
 	while IFS=' ' read -r title cwd; do
+		[ -z "$title" ] && continue
+
 		local numbered_title="$((tab_number + 1)). $title"
 
 		if [ $tab_number -eq 0 ]; then
 			kitty @ set-tab-title "$numbered_title" >/dev/null 2>&1
 			kitty @ send-text "cd \"$cwd\"\n" >/dev/null 2>&1
-      kitty @ set-window-title "$numbered_title"
+			kitty @ set-window-title "$numbered_title"
+
 		else
 			kitty @ launch --type=tab --tab-title="$numbered_title" --cwd="$cwd" --window-title="$numbered_title" >/dev/null 2>&1
 		fi
