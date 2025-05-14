@@ -52,6 +52,7 @@ restore_state() {
 			kitty @ set-tab-title "$numbered_title" >/dev/null 2>&1
 			kitty @ send-text "cd \"$cwd\"\n" >/dev/null 2>&1
 			kitty @ set-window-title "$numbered_title"
+
 		else
 			kitty @ launch --type=tab --tab-title="$numbered_title" --cwd="$cwd" --window-title="$numbered_title" >/dev/null 2>&1
 		fi
