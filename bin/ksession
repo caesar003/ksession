@@ -133,6 +133,38 @@ view_session() {
 	done <"$state_file"
 }
 
+show_help() {
+  cat <<EOF
+KSession - Save and restore Kitty terminal sessions
+Usage:
+  ksession <command> [session_name]
+
+Commands:
+  save     | -s    Save the current Kitty session state
+  restore  | -r    Restore a previously saved session
+  destroy  | -d    Destroy all tabs except the first one
+  list     | -l    List all saved sessions
+  view     | -v    View the contents of a saved session
+  edit     | -e    Edit a saved session file in your preferred editor
+  version  | --version  Show the current version of KSession
+
+Examples:
+  ksession save mysession         Save the current session as 'mysession'
+  ksession restore mysession      Restore the 'mysession' session
+  ksession destroy                Close all tabs except one
+  ksession list                   Show all saved sessions
+  ksession view mysession         See what tabs/dirs are stored in 'mysession'
+  ksession edit mysession         Manually edit the session file in your editor
+
+Configuration:
+  To set a preferred editor, create ~/.config/ksession/config with:
+    EDITOR_CMD="code --wait"   # or "vim", "nvim", "nano", etc.
+
+Default editor fallback order: code → nvim → vim → nano → \$EDITOR
+
+EOF
+}
+
 # Function to edit a session file
 edit_session() {
 	require_session_name "$1"
@@ -176,7 +208,7 @@ version | --version)
 	exit 0
 	;;
 *)
-	echo "Usage: ksession {save|-s|restore|-r|destroy|-d|list|-l|view|-v|version|--version}"
+  show_help
 	exit 1
 	;;
 esac
