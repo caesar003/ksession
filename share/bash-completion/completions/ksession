@@ -4,10 +4,12 @@ _ksession_completions() {
 	local current prev opts
 	current="${COMP_WORDS[COMP_CWORD]}"
 	prev="${COMP_WORDS[COMP_CWORD - 1]}"
-	opts="save restore destroy list version view -s -r -d -l -v"
+	opts="save restore destroy list version view edit -s -r -d -l -v -e"
 
 	if [[ -d ~/.config/ksession/sessions ]]; then
-		if [[ "$prev" == "-r" || "$prev" == "restore" || "$prev" == "-v" || "$prev" == "view" ]]; then
+		if [[ "$prev" == "-r" || "$prev" == "restore" || \
+		      "$prev" == "-v" || "$prev" == "view" || \
+		      "$prev" == "-e" || "$prev" == "edit" ]]; then
 			COMPREPLY=($(compgen -W "$(ls ~/.config/ksession/sessions/*.txt 2>/dev/null | xargs -n 1 basename | sed 's/\.txt$//')" -- "$current"))
 		else
 			COMPREPLY=($(compgen -W "$opts" -- "$current"))
