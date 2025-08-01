@@ -15,51 +15,40 @@ KSession is a command-line tool designed to save and restore Kitty terminal sess
 
 ## Prerequisites
 
--   **Kitty Terminal**: KSession is specifically designed to communicate with the Kitty terminal API. You must have Kitty running for this tool to work effectively. Dowload it [here](https://sw.kovidgoyal.net/kitty/) if you don't have it yet. Trust me you wont regret it.
+-   **Kitty Terminal**: KSession is specifically designed to communicate with the Kitty terminal API. You must have Kitty running for this tool to work effectively. Download it [here](https://sw.kovidgoyal.net/kitty/) if you don't have it yet. Trust me — you won't regret it.
 
 -   **Credits**: Special thanks to [Kovid Goyal](https://kovidgoyal.net) for creating the Kitty terminal and its awesome features that make `KSession` possible.
 
 ## Installation
 
-1. **Using the installation script.**
+1. **Using the installation script:**
 
-    - Clone the repository:
+    ```bash
+    git clone https://github.com/caesar003/ksession.git
+    cd ksession
+    chmod +x install.sh
+    ./install.sh
+    ```
 
-        ```bash
-        git clone https://github.com/caesar003/ksession.git
-        cd ksession
-        ```
+    This installs `ksession` in `/usr/bin`, sets up bash completion, and places the manual page in `/usr/share/man/man1`.
 
-    - Make the installation script executable:
+2. **Using the `.deb` package (cleaner option):**
 
-        ```bash
-        chmod +x install.sh
-        ```
+    Download the `.deb` package from the [releases page](https://github.com/caesar003/ksession/releases) and install it:
 
-    - Run the installation script:
+    ```bash
+    sudo dpkg -i ksession*.deb
+    ```
 
-        ```bash
-        ./install.sh
-        ```
+3. **Verify installation:**
 
-        This will install `ksession` in `/usr/bin`, set up the completion script, and place the manual page in `/usr/share/man/man1`.
-
-2. Using the `.deb` package (cleaner Option)
-
-    - Alternatively, you download the `.deb` package from the [releases page](https://github.com/caesar003/ksession/releases) and install it normally:
-        ```sh
-        sudo dpkg -i ksession*.deb
-        ```
-
-3. Verify Installation:
-
-    ```sh
+    ```bash
     ksession --version
     ```
 
 ## Usage
 
-After installation, you can use the following commands:
+After installation, use the following commands:
 
 -   **Save a session:**
 
@@ -91,28 +80,45 @@ After installation, you can use the following commands:
     ksession view <session_name>
     ```
 
--   **Uninstall KSession:**
+-   **Edit a session file in your editor of choice:**
+
     ```bash
-    ksession -u
+    ksession edit <session_name>
     ```
 
 ## Uninstallation
 
-To uninstall KSession, run the following command:
+To uninstall KSession, run:
 
 ```bash
 ksession -u
 ```
 
-You will be prompted to confirm the uninstallation and choose whether to delete the session files in `~/.config/ksession`. This ensures that the process is not done accidentally.
+You will be prompted to confirm the uninstallation and whether to delete session files in `~/.config/ksession`.
+
+> _(Note: This feature requires a corresponding `-u` flag implementation in the script.)_
 
 ## Configuration Files
 
-KSession uses a configuration directory located at `~/.config/ksession/sessions`, where session files are stored. You can manually edit or remove these files as needed.
+KSession uses the following configuration directory:
+
+-   **Session storage:**
+    `~/.config/ksession/sessions/` — where saved session files are stored as `.txt`.
+
+-   **Editor config:**
+    `~/.config/ksession/config` — allows you to set a preferred text editor.
+
+    Example config:
+
+    ```bash
+    EDITOR_CMD=nvim
+    ```
+
+    If not specified, it defaults to `nvim`.
 
 ## Manual
 
-You can access the manual page for KSession by running:
+You can access the manual page with:
 
 ```bash
 man ksession
@@ -120,7 +126,13 @@ man ksession
 
 ## Contributing
 
-Contributions are welcome! If you would like to contribute to KSession, please fork the repository and create a pull request.
+Contributions are welcome! If you’d like to contribute:
+
+1. Fork the repository.
+2. Create a feature branch.
+3. Submit a pull request.
+
+Bug reports, suggestions, and improvements are appreciated.
 
 ## License
 
