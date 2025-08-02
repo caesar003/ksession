@@ -1,4 +1,4 @@
-.TH "KSESSION" "1" "1.4.0" "Aug 2025"  "Custom Commands"
+.TH "KSESSION" "1" "Aug 2025" "1.4.2" "Custom Commands"
 .SH NAME
 ksession \- Save and restore Kitty terminal sessions
 .SH SYNOPSIS
@@ -22,6 +22,8 @@ This script saves the state of open tabs and their working directories for futur
 Additionally, it allows users to view or edit session files directly using their preferred text editor.
 
 Session files are located in \fI~/.config/ksession/sessions/*.txt\fR
+
+Session files support both absolute paths (/home/user/path) and tilde notation (~/path) for directory specifications.
 
 The default editor is \fInvim\fR, but this can be overridden by setting \fBEDITOR_CMD\fR in \fI~/.config/ksession/config\fR.
 .SH OPTIONS
