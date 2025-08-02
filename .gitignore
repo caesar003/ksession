@@ -1,2 +1,3 @@
-debian
+debian/ksession/usr/*
+debian/*.deb
 notes/

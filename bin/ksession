@@ -159,6 +159,13 @@ Examples:
 Configuration:
   To set a preferred editor, create ~/.config/ksession/config with:
     EDITOR_CMD="code --wait"   # or "vim", "nvim", "nano", etc.
+  Sessions files can be defined in ~/.config/ksession/sessions/<session-name>.txt
+    Example session file:
+
+    todo ~/projects/todo
+    alarm-clock ~/projects/alarm-clock
+    config ~/.config
+    music ~/.music
 
 Default editor fallback order: code → nvim → vim → nano → \$EDITOR
 

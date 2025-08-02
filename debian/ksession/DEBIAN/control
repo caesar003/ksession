@@ -1,0 +1,8 @@
+Package: ksession
+Version: 1.4.0
+Section: utils
+Priority: optional
+Architecture: all
+Depends: bash
+Maintainer: Caesar caesarmuksid@gmail.com
+Description: KSession is a session management tool for kitty terminal emulator.

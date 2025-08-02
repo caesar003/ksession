@@ -13,11 +13,15 @@ ksession \- Save and restore Kitty terminal sessions
 \fBksession\fR {view|-v} [session_name]
 .br
 \fBksession\fR {edit|-e} [session_name]
+.br
+\fBksession\fR {version|--version} 
 .SH DESCRIPTION
 The \fBksession\fR command allows users to save, restore, and manage Kitty terminal sessions. 
 This script saves the state of open tabs and their working directories for future restoration.
 
 Additionally, it allows users to view or edit session files directly using their preferred text editor.
+
+Session files are located in \fI~/.config/ksession/sessions/*.txt\fR
 
 The default editor is \fInvim\fR, but this can be overridden by setting \fBEDITOR_CMD\fR in \fI~/.config/ksession/config\fR.
 .SH OPTIONS
@@ -58,9 +62,15 @@ View a session's contents:
 .TP
 Edit a session file in the configured editor:
 \fBksession edit my_session\fR
+.TP
+View program version:
+\fBksession version\fR
 .SH FILES
 .TP
 \fI~/.config/ksession/config\fR
 Optional configuration file to specify a preferred editor using \fBEDITOR_CMD\fR.
+.TP
+\fI~/.config/ksession/sessions\fR
+Session definitions.
 .SH AUTHOR
 caesar - https://github.com/caesar003

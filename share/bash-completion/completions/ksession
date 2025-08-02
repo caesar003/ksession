@@ -4,7 +4,7 @@ _ksession_completions() {
 	local current prev opts
 	current="${COMP_WORDS[COMP_CWORD]}"
 	prev="${COMP_WORDS[COMP_CWORD - 1]}"
-	opts="save restore destroy list version view edit -s -r -d -l -v -e"
+	opts="save restore destroy list version view edit -s -r -d -l -v -e --version"
 
 	if [[ -d ~/.config/ksession/sessions ]]; then
 		if [[ "$prev" == "-r" || "$prev" == "restore" || \

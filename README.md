@@ -21,29 +21,45 @@ KSession is a command-line tool designed to save and restore Kitty terminal sess
 
 ## Installation
 
-1. **Using the installation script:**
+1. **Manual Installation:**
 
     ```bash
     git clone https://github.com/caesar003/ksession.git
     cd ksession
-    chmod +x install.sh
-    ./install.sh
+
+    # Make executable and add to PATH
+    chmod +x bin/ksession
+    export PATH="$PWD/bin:$PATH"  # Add to ~/.bashrc for persistence
+
+    # Optional: Enable bash completion
+    source share/bash-completion/completions/ksession  # Add to ~/.bashrc
+
+    # Optional: Add manual page to MANPATH
+    export MANPATH="$PWD/share/man:$MANPATH"  # Add to ~/.bashrc
     ```
 
     This installs `ksession` in `/usr/bin`, sets up bash completion, and places the manual page in `/usr/share/man/man1`.
 
-2. **Using the `.deb` package (cleaner option):**
+2. **Build and install from source**
+
+    ```bash
+    git clone https://github.com/caesar003/ksession.git
+    cd ksession
+
+    # Build and install
+    make build      # This creates .deb package in `debian/ksession*.deb`
+    sudo dpkg -i debian/ksession*.deb  # Installs system-wide
+
+    # Verify installation
+    ksession --version
+    ```
+
+3. **Using the `.deb` package:**
 
     Download the `.deb` package from the [releases page](https://github.com/caesar003/ksession/releases) and install it:
 
     ```bash
     sudo dpkg -i ksession*.deb
-    ```
-
-3. **Verify installation:**
-
-    ```bash
-    ksession --version
     ```
 
 ## Usage
@@ -85,18 +101,30 @@ After installation, use the following commands:
     ```bash
     ksession edit <session_name>
     ```
+-   **View version number:**
+
+    ```bash
+    ksession version
+    ```
+
 
 ## Uninstallation
 
-To uninstall KSession, run:
+1. For manual installation
 
-```bash
-ksession -u
-```
+    ```bash
+    # Remove from PATH/MANPATH in your shell config
+    rm -rf ~/path/to/ksession  # Remove cloned repo
+    rm -rf ~/.config/ksession  # Optional: Remove config files
+    ```
 
-You will be prompted to confirm the uninstallation and whether to delete session files in `~/.config/ksession`.
+2. For Package installation or using `Makefile`
+    ```bash
+    sudo dpkg -r ksession
 
-> _(Note: This feature requires a corresponding `-u` flag implementation in the script.)_
+    # then you want to clean configuration file
+    rm -rf ~/.config/ksession  # Optional: Remove config files
+    ```
 
 ## Configuration Files
 
@@ -104,6 +132,15 @@ KSession uses the following configuration directory:
 
 -   **Session storage:**
     `~/.config/ksession/sessions/` — where saved session files are stored as `.txt`.
+
+    Example session:
+
+    ```txt
+    todo ~/projects/todo
+    alarm-clock ~/projects/alarm-clock
+    config ~/.config
+    music ~/.music
+    ```
 
 -   **Editor config:**
     `~/.config/ksession/config` — allows you to set a preferred text editor.
