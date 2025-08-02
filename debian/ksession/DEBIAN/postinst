@@ -1,25 +1,31 @@
 #!/bin/bash
-
 set -e
 
-# Use the installing user's home directory, not root
-USER_HOME=$(getent passwd "$SUDO_USER" | cut -d: -f6)
+# Determine the real user (who invoked sudo or was logged in)
+REAL_USER="${SUDO_USER:-$USER}"
+USER_HOME=$(getent passwd "$REAL_USER" | cut -d: -f6)
 
 CONFIG_DIR="$USER_HOME/.config/ksession"
 SESSIONS_DIR="$CONFIG_DIR/sessions"
 CONFIG_FILE="$CONFIG_DIR/config"
 SAMPLE_SESSION_FILE="$SESSIONS_DIR/sample.txt"
 
-echo "[postinstall] Initializing KSession configuration..."
+echo "[postinstall] Initializing KSession configuration for user: $REAL_USER"
 
-# Create directories if they don't exist
+# Create directories
+# install -d -o "$REAL_USER" -g "$REAL_USER" "$SESSIONS_DIR"
+# Create directories
 mkdir -p "$SESSIONS_DIR"
+
 
 # Create config file if not exists
 if [ ! -f "$CONFIG_FILE" ]; then
-    echo "EDITOR_CMD=code" > "$CONFIG_FILE"
-    echo "" >> "$CONFIG_FILE"
-    echo "# Edit to the editor of your choice" >> "$CONFIG_FILE"
+    cat <<EOF > "$CONFIG_FILE"
+EDITOR_CMD=code
+
+# Edit to the editor of your choice
+EOF
+    chown "$REAL_USER:$REAL_USER" "$CONFIG_FILE"
     echo "[postinstall] Created config file at $CONFIG_FILE"
 fi
 
@@ -32,10 +38,11 @@ alarm-clock ~/projects/alarm-clock
 config ~/.config
 music ~/.music
 EOF
+    chown "$REAL_USER:$REAL_USER" "$SAMPLE_SESSION_FILE"
     echo "[postinstall] Created sample session file at $SAMPLE_SESSION_FILE"
 fi
 
+chown -R "$REAL_USER:$REAL_USER" "$CONFIG_DIR"
+
 echo "[postinstall] KSession config initialized."
-
 exit 0
-
