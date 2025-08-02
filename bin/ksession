@@ -4,7 +4,7 @@
 # Last modified: Sat Aug 02 2025, 03.07
 
 # Define constants for paths
-VERSION="1.4.1"
+VERSION="1.4.2"
 SESSION_DIR="$HOME/.config/ksession/sessions"
 mkdir -p "$SESSION_DIR"
 
@@ -74,6 +74,11 @@ restore_state() {
 	while IFS=' ' read -r title cwd; do
 		[ -z "$title" ] && continue
 
+		# Expand tilde notation to handle ~/path formats
+		if [[ "$cwd" == "~"* ]]; then
+			cwd="${cwd/#\~/$HOME}"
+		fi
+
 		local numbered_title="$((tab_number + 1)). $title"
 
 		if [ $tab_number -eq 0 ]; then
@@ -134,7 +139,7 @@ view_session() {
 }
 
 show_help() {
-  cat <<EOF
+	cat <<EOF
 KSession - Save and restore Kitty terminal sessions
 Usage:
   ksession <command> [session_name]
@@ -159,7 +164,9 @@ Examples:
 Configuration:
   To set a preferred editor, create ~/.config/ksession/config with:
     EDITOR_CMD="code --wait"   # or "vim", "nvim", "nano", etc.
+
   Sessions files can be defined in ~/.config/ksession/sessions/<session-name>.txt
+    Paths support both tilde notation (~/) and absolute paths (/home/user/)
     Example session file:
 
     todo ~/projects/todo
@@ -215,7 +222,7 @@ version | --version)
 	exit 0
 	;;
 *)
-  show_help
+	show_help
 	exit 1
 	;;
 esac

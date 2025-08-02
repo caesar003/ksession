@@ -124,7 +124,7 @@ validate_environment() {
 check_version_consistency() {
 	local script_version=$(get_current_version)
 	local control_version=$(grep '^Version:' debian/ksession/DEBIAN/control | cut -d' ' -f2)
-	local man_version=$(grep '^\.TH' share/man/man1/ksession.1 | awk '{print $4}' | tr -d '"')
+	local man_version=$(grep '^\.TH' share/man/man1/ksession.1 | awk '{print $5}' | tr -d '"')
 
 	log_info "Current versions:"
 	log_info "  Script: $script_version"
