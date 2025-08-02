@@ -1,0 +1,48 @@
+#!/bin/bash
+set -e
+
+# Determine the real user (who invoked sudo or was logged in)
+REAL_USER="${SUDO_USER:-$USER}"
+USER_HOME=$(getent passwd "$REAL_USER" | cut -d: -f6)
+
+CONFIG_DIR="$USER_HOME/.config/ksession"
+SESSIONS_DIR="$CONFIG_DIR/sessions"
+CONFIG_FILE="$CONFIG_DIR/config"
+SAMPLE_SESSION_FILE="$SESSIONS_DIR/sample.txt"
+
+echo "[postinstall] Initializing KSession configuration for user: $REAL_USER"
+
+# Create directories
+# install -d -o "$REAL_USER" -g "$REAL_USER" "$SESSIONS_DIR"
+# Create directories
+mkdir -p "$SESSIONS_DIR"
+
+
+# Create config file if not exists
+if [ ! -f "$CONFIG_FILE" ]; then
+    cat <<EOF > "$CONFIG_FILE"
+EDITOR_CMD=code
+
+# Edit to the editor of your choice
+EOF
+    chown "$REAL_USER:$REAL_USER" "$CONFIG_FILE"
+    echo "[postinstall] Created config file at $CONFIG_FILE"
+fi
+
+# Create sample session file if not exists
+if [ ! -f "$SAMPLE_SESSION_FILE" ]; then
+    cat <<EOF > "$SAMPLE_SESSION_FILE"
+# make a copy of this file and define your directories you actually need to work with
+todo ~/projects/todo
+alarm-clock ~/projects/alarm-clock
+config ~/.config
+music ~/.music
+EOF
+    chown "$REAL_USER:$REAL_USER" "$SAMPLE_SESSION_FILE"
+    echo "[postinstall] Created sample session file at $SAMPLE_SESSION_FILE"
+fi
+
+chown -R "$REAL_USER:$REAL_USER" "$CONFIG_DIR"
+
+echo "[postinstall] KSession config initialized."
+exit 0
