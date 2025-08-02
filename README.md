@@ -38,7 +38,7 @@ KSession is a command-line tool designed to save and restore Kitty terminal sess
     export MANPATH="$PWD/share/man:$MANPATH"  # Add to ~/.bashrc
     ```
 
-    This installs `ksession` in `/usr/bin`, sets up bash completion, and places the manual page in `/usr/share/man/man1`.
+    Now `ksession` should be available from anywhere within your system.
 
 2. **Build and install from source**
 
