@@ -4,7 +4,7 @@
 # Last modified: Sat Aug 02 2025, 03.07
 
 # Define constants for paths
-VERSION="1.4.4"
+VERSION="__VERSION__"
 SESSION_DIR="$HOME/.config/ksession/sessions"
 mkdir -p "$SESSION_DIR"
 
@@ -72,9 +72,9 @@ restore_state() {
 
 	local tab_number=0
 	while IFS=' ' read -r title cwd; do
-		[ -z "$title" ] && continue
+		# Skip empty lines and comment lines
+		[[ -z "$title" || "$title" =~ ^# ]] && continue
 
-		# Expand tilde notation to handle ~/path formats
 		if [[ "$cwd" == "~"* ]]; then
 			cwd="${cwd/#\~/$HOME}"
 		fi
@@ -85,10 +85,10 @@ restore_state() {
 			kitty @ set-tab-title "$numbered_title" >/dev/null 2>&1
 			kitty @ send-text "cd \"$cwd\"\n" >/dev/null 2>&1
 			kitty @ set-window-title "$numbered_title"
-
 		else
 			kitty @ launch --type=tab --tab-title="$numbered_title" --cwd="$cwd" --window-title="$numbered_title" >/dev/null 2>&1
 		fi
+
 		echo "$((tab_number + 1)). opening $title at $cwd"
 		((tab_number++))
 	done <"$state_file"
@@ -132,6 +132,9 @@ view_session() {
 
 	echo "Session content for $1:"
 	while IFS= read -r line; do
+		# Skip comment or empty line
+		[[ -z "$line" || "$line" =~ ^# ]] && continue
+
 		title=$(echo "$line" | awk '{print $1}')
 		cwd=$(echo "$line" | awk '{print $2}')
 		echo "Title: $title, CWD: $cwd"

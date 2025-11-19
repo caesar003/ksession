@@ -5,8 +5,8 @@ SHELL := /bin/bash
 SCRIPT_NAME := ksession
 BUILD_SCRIPT := ./build.sh
 
-# Get current version from the main script
-CURRENT_VERSION := $(shell grep '^VERSION=' bin/$(SCRIPT_NAME) | cut -d'"' -f2)
+# Get current version from VERSION file
+CURRENT_VERSION := $(shell cat VERSION 2>/dev/null || echo "0.0.0")
 PACKAGE_NAME := $(SCRIPT_NAME)-$(CURRENT_VERSION)-amd64.deb
 
 # Default target
@@ -55,12 +55,12 @@ major: ## Increment major version and build (1.4.0 -> 2.0.0)
 
 .PHONY: install
 install: ## Install the built package using dpkg
-	@if [ ! -f "debian/$(PACKAGE_NAME)" ]; then \
+	@if [ ! -f "dist/$(CURRENT_VERSION)/$(PACKAGE_NAME)" ]; then \
 		echo "Package not found. Building first..."; \
 		$(MAKE) build; \
 	fi
 	@echo "Installing $(PACKAGE_NAME)..."
-	@sudo dpkg -i debian/$(PACKAGE_NAME)
+	@sudo dpkg -i dist/$(CURRENT_VERSION)/$(PACKAGE_NAME)
 
 .PHONY: uninstall
 uninstall: ## Uninstall the package
@@ -69,8 +69,8 @@ uninstall: ## Uninstall the package
 .PHONY: clean
 clean: ## Clean build artifacts
 	@echo "Cleaning build artifacts..."
-	@rm -f debian/*.deb
-	@echo "Cleaned debian/*.deb files"
+	@rm -rf dist/
+	@echo "Cleaned dist/ directory"
 
 .PHONY: test
 test: ## Run basic tests on the script
@@ -88,8 +88,8 @@ info: ## Show current project information
 	@echo "  Name: $(SCRIPT_NAME)"
 	@echo "  Current Version: $(CURRENT_VERSION)"
 	@echo "  Package Name: $(PACKAGE_NAME)"
-	@echo "  Package Path: debian/$(PACKAGE_NAME)"
-	@echo "  Package Exists: $(shell [ -f debian/$(PACKAGE_NAME) ] && echo "Yes" || echo "No")"
+	@echo "  Package Path: dist/$(CURRENT_VERSION)/$(PACKAGE_NAME)"
+	@echo "  Package Exists: $(shell [ -f dist/$(CURRENT_VERSION)/$(PACKAGE_NAME) ] && echo "Yes" || echo "No")"
 
 .PHONY: changelog
 changelog: ## Generate a changelog entry (requires notes/ directory)

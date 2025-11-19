@@ -29,67 +29,93 @@ log_error() {
 	echo -e "${RED}[ERROR]${NC} $1"
 }
 
-# Function to extract version from the main script
+# Function to get version from VERSION file
 get_current_version() {
-	grep '^VERSION=' bin/ksession | cut -d'"' -f2
+	if [ -f "VERSION" ]; then
+		cat VERSION
+	else
+		echo "0.0.0"
+	fi
 }
 
-# Function to update version in all files
-update_version() {
+# Function to update VERSION file
+update_version_file() {
 	local new_version="$1"
-	local current_version="$2"
-
-	log_info "Updating version from $current_version to $new_version"
-
-	# Update main script
-	sed -i "s/^VERSION=\".*\"/VERSION=\"$new_version\"/" bin/ksession
-	log_info "Updated version in bin/ksession"
-
-	# Update man page
-	sed -i "s/^\.TH \"KSESSION\" \"1\" \".*\" \".*\" \"Custom Commands\"$/.TH \"KSESSION\" \"1\" \"$(date +"%b %Y")\" \"$new_version\" \"Custom Commands\"/" share/man/man1/ksession.1
-	log_info "Updated version in man page"
-
-	# Update DEBIAN/control
-	sed -i "s/^Version: .*/Version: $new_version/" debian/ksession/DEBIAN/control
-	log_info "Updated version in DEBIAN/control"
+	echo "$new_version" >VERSION
+	log_info "Updated VERSION file to $new_version"
 }
 
-# Function to sync files to debian package structure
-sync_files() {
-	log_info "Syncing files to debian package structure..."
+# Function to replace placeholders with actual version
+replace_version_placeholders() {
+	local version="$1"
+	local target_dir="$2"
+	local build_date=$(date +"%b %Y")
 
-	# Copy main script
-	cp bin/ksession debian/ksession/usr/bin/
-	log_info "Copied bin/ksession"
+	log_info "Replacing version placeholders with $version"
+	log_info "Using build date: $build_date"
 
-	# Copy completion script
-	cp share/bash-completion/completions/ksession debian/ksession/usr/share/bash-completion/completions/
+	# Replace in main script
+	sed "s/__VERSION__/$version/g" bin/ksession >"$target_dir/ksession/usr/bin/ksession"
+	chmod +x "$target_dir/ksession/usr/bin/ksession"
+	log_info "Processed bin/ksession"
+
+	# Replace in DEBIAN/control
+	sed "s/0\.0\.0/$version/g" debian/ksession/DEBIAN/control >"$target_dir/ksession/DEBIAN/control"
+	log_info "Processed DEBIAN/control"
+
+	# Replace in man page (both __VERSION__ and __DATE__)
+	sed -e "s/__VERSION__/$version/g" -e "s/__DATE__/$build_date/g" share/man/man1/ksession.1 >"$target_dir/ksession/usr/share/man/man1/ksession.1"
+	log_info "Processed man page"
+
+	# Copy completion script (no version replacement needed)
+	cp share/bash-completion/completions/ksession "$target_dir/ksession/usr/share/bash-completion/completions/ksession"
 	log_info "Copied bash completion"
+}
 
-	# Copy man page
-	cp share/man/man1/ksession.1 debian/ksession/usr/share/man/man1/
-	log_info "Copied man page"
+# Function to prepare build directory
+prepare_build_dir() {
+	local version="$1"
+	local build_dir="dist/$version"
 
-	log_success "All files synced successfully"
+	log_info "Preparing build directory: $build_dir"
+
+	# Create dist directory structure
+	mkdir -p "$build_dir/ksession/usr/bin"
+	mkdir -p "$build_dir/ksession/usr/share/bash-completion/completions"
+	mkdir -p "$build_dir/ksession/usr/share/man/man1"
+	mkdir -p "$build_dir/ksession/DEBIAN"
+
+	# Copy DEBIAN files (postinst, postrm, etc.) if they exist
+	if [ -d "debian/ksession/DEBIAN" ]; then
+		for file in debian/ksession/DEBIAN/*; do
+			if [ -f "$file" ] && [ "$(basename "$file")" != "control" ]; then
+				cp "$file" "$build_dir/ksession/DEBIAN/"
+				chmod 755 "$build_dir/ksession/DEBIAN/$(basename "$file")" 2>/dev/null || true
+			fi
+		done
+	fi
+
+	log_success "Build directory prepared"
+	echo "$build_dir"
 }
 
 # Function to build the deb package
 build_package() {
 	local version="$1"
+	local build_dir="dist/$version"
 	local package_name="ksession-${version}-amd64.deb"
 
 	log_info "Building debian package: $package_name"
 
-	cd debian
-	dpkg-deb --build ./ksession "$package_name"
-	cd ..
+	# Build the package
+	dpkg-deb --build "$build_dir/ksession" "$build_dir/$package_name"
 
-	if [ -f "debian/$package_name" ]; then
-		log_success "Package built successfully: debian/$package_name"
+	if [ -f "$build_dir/$package_name" ]; then
+		log_success "Package built successfully: $build_dir/$package_name"
 
 		# Show package info
 		log_info "Package information:"
-		dpkg-deb --info "debian/$package_name"
+		dpkg-deb --info "$build_dir/$package_name"
 	else
 		log_error "Package build failed!"
 		exit 1
@@ -117,26 +143,50 @@ validate_environment() {
 		exit 1
 	fi
 
+	# Check if VERSION file exists
+	if [ ! -f "VERSION" ]; then
+		log_warning "VERSION file not found. Creating with version 0.0.0"
+		echo "0.0.0" >VERSION
+	fi
+
 	log_success "Environment validation passed"
 }
 
-# Function to check version consistency
-check_version_consistency() {
-	local script_version=$(get_current_version)
-	local control_version=$(grep '^Version:' debian/ksession/DEBIAN/control | cut -d' ' -f2)
-	local man_version=$(grep '^\.TH' share/man/man1/ksession.1 | awk '{print $6}' | tr -d '"')
+# Function to check if source files have placeholders
+check_placeholders() {
+	log_info "Checking for version placeholders in source files..."
 
-	log_info "Current versions:"
-	log_info "  Script: $script_version"
-	log_info "  Control: $control_version"
-	log_info "  Man page: $man_version"
+	local has_placeholders=true
 
-	if [ "$script_version" != "$control_version" ] || [ "$script_version" != "$man_version" ]; then
-		log_warning "Version mismatch detected!"
-		return 1
+	# Check main script
+	if grep -q "VERSION=\"__VERSION__\"" bin/ksession; then
+		log_info "  ✓ bin/ksession has placeholder"
 	else
-		log_success "All versions are consistent"
-		return 0
+		log_warning "  ✗ bin/ksession missing placeholder"
+		has_placeholders=false
+	fi
+
+	# Check control file
+	if grep -q "Version: 0.0.0" debian/ksession/DEBIAN/control; then
+		log_info "  ✓ DEBIAN/control has placeholder"
+	else
+		log_warning "  ✗ DEBIAN/control missing placeholder"
+		has_placeholders=false
+	fi
+
+	# Check man page
+	if grep -q "__VERSION__" share/man/man1/ksession.1 && grep -q "__DATE__" share/man/man1/ksession.1; then
+		log_info "  ✓ Man page has placeholders"
+	else
+		log_warning "  ✗ Man page missing placeholders"
+		has_placeholders=false
+	fi
+
+	if [ "$has_placeholders" = false ]; then
+		log_warning "Some source files are missing placeholders"
+		log_warning "Build will continue but source files should use placeholders"
+	else
+		log_success "All placeholders found"
 	fi
 }
 
@@ -148,15 +198,15 @@ Usage: $0 [OPTIONS]
 Options:
     -v, --version VERSION    Set new version and build
     -b, --build             Build with current version (no version change)
-    -c, --check             Check version consistency across files
+    -c, --check             Check version file and placeholders
     -h, --help              Show this help message
 
 Examples:
-    $0 --version 1.4.1      # Update to version 1.4.1 and build
-    $0 --build               # Build with current version
-    $0 --check               # Check if versions are consistent
+    $0 --version 1.4.5      # Update VERSION to 1.4.5 and build
+    $0 --build              # Build with current VERSION
+    $0 --check              # Check VERSION file and placeholders
 
-If no options are provided, the script will check versions and build if consistent.
+If no options are provided, the script will check and build with current version.
 EOF
 }
 
@@ -178,35 +228,37 @@ main() {
 			log_warning "New version is the same as current version ($current_version)"
 		fi
 
-		update_version "$new_version" "$current_version"
-		sync_files
+		update_version_file "$new_version"
+		check_placeholders
+
+		local build_dir=$(prepare_build_dir "$new_version")
+		replace_version_placeholders "$new_version" "dist/$new_version"
 		build_package "$new_version"
 		;;
 	-b | --build)
-		if ! check_version_consistency; then
-			log_error "Cannot build with inconsistent versions. Use --version to fix."
-			exit 1
-		fi
 		local current_version=$(get_current_version)
-		sync_files
+		check_placeholders
+
+		local build_dir=$(prepare_build_dir "$current_version")
+		replace_version_placeholders "$current_version" "dist/$current_version"
 		build_package "$current_version"
 		;;
 	-c | --check)
-		check_version_consistency
+		local current_version=$(get_current_version)
+		log_info "Current version in VERSION file: $current_version"
+		check_placeholders
 		;;
 	-h | --help)
 		show_usage
 		;;
 	"")
-		log_info "No options provided. Checking versions and building if consistent..."
-		if check_version_consistency; then
-			local current_version=$(get_current_version)
-			sync_files
-			build_package "$current_version"
-		else
-			log_error "Version inconsistency found. Use --version to update or fix manually."
-			exit 1
-		fi
+		log_info "No options provided. Building with current version..."
+		local current_version=$(get_current_version)
+		check_placeholders
+
+		local build_dir=$(prepare_build_dir "$current_version")
+		replace_version_placeholders "$current_version" "dist/$current_version"
+		build_package "$current_version"
 		;;
 	*)
 		log_error "Unknown option: $1"

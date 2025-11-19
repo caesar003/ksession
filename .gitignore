@@ -1,3 +1,5 @@
 debian/ksession/usr/*
 debian/*.deb
 notes/
+
+dist
